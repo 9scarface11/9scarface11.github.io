@@ -9,6 +9,16 @@
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.456.0/dist/umd/lucide.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- GOOGLE ANALYTICS (Replace G-XXXXXXXXXX with your actual Measurement ID) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+
 <style>
 :root{
   --bg:#0f0709; 
@@ -41,12 +51,9 @@ body{
 .card{background:var(--surface); border:1px solid var(--border); transition:border-color .25s ease, transform .25s ease, box-shadow .25s ease;}
 .card:hover{border-color:rgba(194,24,91,.45); transform:translateY(-3px); box-shadow:0 20px 40px -20px rgba(194,24,91,.25);}
 .tag{font-family:'JetBrains Mono',monospace; font-size:.68rem; border:1px solid var(--border); color:var(--text-dim); padding:.2rem .5rem; border-radius:4px;}
-
-/* Distinct Tab & Filter Styling */
 .filter-btn, .skill-btn{border:1px solid var(--border); color:var(--text-dim); transition:all .2s ease; cursor:pointer;}
 .filter-btn.active, .skill-btn.active{background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#ffffff; border-color:transparent; font-weight:600;}
 .filter-btn:not(.active):hover, .skill-btn:not(.active):hover{border-color:var(--cyan); color:var(--text);}
-
 .modal-backdrop{background:rgba(5,8,16,.85); backdrop-filter:blur(6px);}
 .scrollbar-thin::-webkit-scrollbar{width:7px}
 .scrollbar-thin::-webkit-scrollbar-thumb{background:#1f2937; border-radius:4px}
@@ -127,7 +134,6 @@ input:focus,textarea:focus{outline:none; border-color:var(--cyan); box-shadow:0 
     
     <div class="flex flex-wrap gap-3 mt-8">
       <a href="#projects" class="px-5 py-3 rounded-md font-semibold text-sm" style="background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#ffffff;">Explore Projects</a>
-      <!-- Points to your uploaded resume file -->
       <a href="mehul-resume.pdf" target="_blank" class="px-5 py-3 rounded-md font-semibold text-sm border border-[var(--border)] hover:border-[var(--cyan)] transition">View Resume</a>
       <button type="button" onclick="openModal('aboutMe')" class="px-5 py-3 rounded-md font-semibold text-sm border border-[var(--border)] hover:border-[var(--cyan)] transition">About Me</button>
     </div>
@@ -360,7 +366,6 @@ input:focus,textarea:focus{outline:none; border-color:var(--cyan); box-shadow:0 
       <p class="mono text-xs text-[var(--cyan)] mb-2">04 // Core Competencies & Tooling</p>
       <h2 class="text-3xl font-bold">Interactive Skills Stack</h2>
     </div>
-    <!-- Category Tabs (Uses .skill-btn to prevent conflict with project filters) -->
     <div class="flex flex-wrap gap-2" id="skillTabs">
       <button type="button" class="skill-btn active px-3.5 py-1.5 rounded-lg text-xs mono" onclick="switchSkillTab('robotics', this)">Robotics Frameworks</button>
       <button type="button" class="skill-btn px-3.5 py-1.5 rounded-lg text-xs mono" onclick="switchSkillTab('simulation', this)">Simulation</button>
@@ -384,7 +389,6 @@ input:focus,textarea:focus{outline:none; border-color:var(--cyan); box-shadow:0 
       <div class="flex gap-4 mt-8">
         <a href="https://github.com/9scarface11" target="_blank" class="w-10 h-10 rounded-md border border-[var(--border)] flex items-center justify-center hover:border-[var(--cyan)] transition" title="GitHub"><i data-lucide="github" class="w-4 h-4"></i></a>
         <a href="https://www.linkedin.com/in/mehul-rathore-760445250/" target="_blank" class="w-10 h-10 rounded-md border border-[var(--border)] flex items-center justify-center hover:border-[var(--cyan)] transition" title="LinkedIn"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
-        <!-- Corrected with mailto: protocol -->
         <a href="mailto:rathoremehul07@gmail.com" class="w-10 h-10 rounded-md border border-[var(--border)] flex items-center justify-center hover:border-[var(--cyan)] transition" title="Email"><i data-lucide="mail" class="w-4 h-4"></i></a>
       </div>
     </div>
@@ -395,7 +399,12 @@ input:focus,textarea:focus{outline:none; border-color:var(--cyan); box-shadow:0 
       <button type="submit" id="submitBtn" class="px-5 py-3 rounded-md font-semibold text-sm" style="background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#ffffff;">Send Message</button>
     </form>
   </div>
-  <p class="text-xs text-[var(--text-dim)] mt-16 text-center">© 2026 Mehul. Built with ROS 2, PyTorch, and a lot of debugging.</p>
+  
+  <!-- Hit Counter & Copyright -->
+  <div class="mt-16 flex flex-col items-center gap-4">
+    <img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2F9scarface11.github.io&label=VISITORS&labelColor=%231a0c10&countColor=%23ff2e63&style=flat-square" alt="Visitor Count" class="h-6 rounded">
+    <p class="text-xs text-[var(--text-dim)] text-center">© 2026 Mehul. Built with ROS 2, PyTorch, and a lot of debugging.</p>
+  </div>
 </footer>
 
 <!-- MODAL -->
@@ -418,7 +427,7 @@ function toggleMobileMenu() {
 }
 document.getElementById('menuBtn').addEventListener('click', toggleMobileMenu);
 
-// Project filters (Targeted specifically to #filterBar)
+// Project filters
 const projectFilterBtns = document.querySelectorAll('#filterBar .filter-btn');
 projectFilterBtns.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -500,7 +509,6 @@ function renderSkills(category) {
   lucide.createIcons();
 }
 
-// Safely pass button reference directly to avoid global event dependency
 function switchSkillTab(category, buttonEl) {
   const buttons = document.querySelectorAll('#skillTabs .skill-btn');
   buttons.forEach(btn => btn.classList.remove('active'));
@@ -647,14 +655,14 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal(); 
 });
 
-// Contact form handling with feedback
+// Contact form
 document.getElementById('contactForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = e.target;
   const submitBtn = document.getElementById('submitBtn');
   const formData = new FormData(form);
   
-  // Paste your Web3Forms Access Key here when received
+  // REPLACE THIS WITH YOUR REAL WEB3FORMS ACCESS KEY
   const accessKey = "YOUR_ACCESS_KEY_HERE";
   formData.append("access_key", accessKey);
 
@@ -674,10 +682,10 @@ document.getElementById('contactForm').addEventListener('submit', async (e) => {
       form.reset();
       setTimeout(() => toast.classList.remove('show'), 3200);
     } else {
-      alert("Form submission failed. Please check your Web3Forms API key or email directly at rathoremehul07@gmail.com");
+      alert("Form submission failed. Please check your Web3Forms API key or email directly.");
     }
   } catch (error) {
-    alert("Connection error. Please email directly at rathoremehul07@gmail.com");
+    alert("Connection error. Please email directly.");
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = 'Send Message';
