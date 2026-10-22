@@ -51,9 +51,9 @@ body{
 .card{background:var(--surface); border:1px solid var(--border); transition:border-color .25s ease, transform .25s ease, box-shadow .25s ease;}
 .card:hover{border-color:rgba(194,24,91,.45); transform:translateY(-3px); box-shadow:0 20px 40px -20px rgba(194,24,91,.25);}
 .tag{font-family:'JetBrains Mono',monospace; font-size:.68rem; border:1px solid var(--border); color:var(--text-dim); padding:.2rem .5rem; border-radius:4px;}
-.filter-btn, .skill-btn{border:1px solid var(--border); color:var(--text-dim); transition:all .2s ease; cursor:pointer;}
-.filter-btn.active, .skill-btn.active{background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#ffffff; border-color:transparent; font-weight:600;}
-.filter-btn:not(.active):hover, .skill-btn:not(.active):hover{border-color:var(--cyan); color:var(--text);}
+.filter-btn, .skill-btn, .media-tab{border:1px solid var(--border); color:var(--text-dim); transition:all .2s ease; cursor:pointer;}
+.filter-btn.active, .skill-btn.active, .media-tab.active{background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#ffffff; border-color:transparent; font-weight:600;}
+.filter-btn:not(.active):hover, .skill-btn:not(.active):hover, .media-tab:not(.active):hover{border-color:var(--cyan); color:var(--text);}
 .modal-backdrop{background:rgba(5,8,16,.85); backdrop-filter:blur(6px);}
 .scrollbar-thin::-webkit-scrollbar{width:7px}
 .scrollbar-thin::-webkit-scrollbar-thumb{background:#1f2937; border-radius:4px}
@@ -256,7 +256,7 @@ input:focus,textarea:focus{outline:none; border-color:var(--cyan); box-shadow:0 
         <span class="tag">Arduino Nano</span><span class="tag">Embedded C++</span><span class="tag">VL53L0X</span><span class="tag">Serial Comm</span><span class="tag">SolidWorks</span><span class="tag">NumPy</span>
       </div>
       <div class="flex items-center gap-4 mt-5">
-        <span class="text-sm font-semibold text-[var(--cyan)] flex items-center gap-1 hover:gap-2 transition-all">View Build & Calibration <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+        <span class="text-sm font-semibold text-[var(--cyan)] flex items-center gap-1 hover:gap-2 transition-all"><i data-lucide="play-circle" class="w-4 h-4"></i> View Media, Build & Calibration <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
         <a href="https://github.com/9scarface11/Scaled-Down-Lidar-Setup" target="_blank" onclick="event.stopPropagation()" class="ml-auto text-[var(--text-dim)] hover:text-white transition flex items-center gap-1 text-xs mono"><i data-lucide="github" class="w-4 h-4"></i>Repo</a>
       </div>
     </article>
@@ -409,8 +409,8 @@ input:focus,textarea:focus{outline:none; border-color:var(--cyan); box-shadow:0 
 
 <!-- MODAL -->
 <div id="modalBackdrop" class="fixed inset-0 z-[60] modal-backdrop hidden items-center justify-center p-4" style="padding-top:calc(1rem + env(safe-area-inset-top,0px));">
-  <div class="card rounded-xl max-w-xl w-full max-h-[85vh] overflow-y-auto scrollbar-thin p-7 relative">
-    <button type="button" onclick="closeModal()" class="absolute top-5 right-5 text-[var(--text-dim)] hover:text-white p-1" title="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
+  <div class="card rounded-xl max-w-3xl w-full max-h-[88vh] overflow-y-auto scrollbar-thin p-6 md:p-8 relative">
+    <button type="button" onclick="closeModal()" class="absolute top-5 right-5 text-[var(--text-dim)] hover:text-white p-1 z-10" title="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
     <div id="modalContent"></div>
   </div>
 </div>
@@ -514,6 +514,84 @@ function switchSkillTab(category, buttonEl) {
   renderSkills(category);
 }
 
+// ==========================================
+// LIDAR PROJECT MEDIA GALLERY CONFIGURATION
+// ==========================================
+// Replace `src` paths with your actual image/video filenames in your repo!
+const lidarMedia = [
+  {
+    type: 'video',
+    label: 'Live Sweep Demo',
+    icon: 'video',
+    src: 'lidar-demo.mp4',
+    poster: 'lidar-setup.jpg',
+    caption: 'Dual-axis pan-tilt servo mechanism actively sweeping the VL53L0X ToF sensor and streaming serial distance data.'
+  },
+  {
+    type: 'image',
+    label: 'Hardware Setup',
+    icon: 'cpu',
+    src: 'lidar-setup.jpg',
+    caption: 'Assembled prototype with Arduino Nano, VL53L0X Time-of-Flight sensor, and 3D-printed pan-tilt gimbal.'
+  },
+  {
+    type: 'image',
+    label: '3D Point Cloud',
+    icon: 'scatter-chart',
+    src: 'lidar-pointcloud.jpg',
+    caption: 'Reconstructed 3D Cartesian point cloud after spherical-to-Cartesian conversion and per-axis offset calibration.'
+  },
+  {
+    type: 'image',
+    label: 'SolidWorks CAD',
+    icon: 'box',
+    src: 'lidar-cad.jpg',
+    caption: 'Custom parametric CAD enclosure and dual-servo bracket modeled in SolidWorks for additive manufacturing.'
+  }
+];
+
+function renderLidarMediaStage(index) {
+  const item = lidarMedia[index];
+  const stageEl = document.getElementById('lidarMediaStage');
+  const captionEl = document.getElementById('lidarMediaCaption');
+  if (!stageEl || !item) return;
+
+  // Update active button state
+  document.querySelectorAll('.lidar-media-btn').forEach((btn, idx) => {
+    btn.classList.toggle('active', idx === index);
+  });
+
+  if (item.type === 'video') {
+    stageEl.innerHTML = `
+      <video controls autoplay muted playsinline loop poster="${item.poster || ''}" class="w-full h-full max-h-[360px] object-contain bg-black"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <source src="${item.src}" type="video/mp4">
+        Your browser does not support HTML5 video.
+      </video>
+      <div class="hidden flex-col items-center justify-center p-8 text-center h-64 w-full">
+        <i data-lucide="film" class="w-10 h-10 text-[var(--cyan)] mb-2"></i>
+        <p class="text-sm font-semibold text-[var(--text)]">${item.label} (Video)</p>
+        <p class="text-xs mono text-[var(--text-dim)] mt-1">Add <span class="text-[var(--cyan)]">${item.src}</span> to your project folder to play video</p>
+      </div>
+    `;
+  } else {
+    stageEl.innerHTML = `
+      <img src="${item.src}" alt="${item.label}" class="w-full h-full max-h-[360px] object-contain bg-[#090d16]"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="hidden flex-col items-center justify-center p-8 text-center h-64 w-full">
+        <i data-lucide="image" class="w-10 h-10 text-[var(--cyan)] mb-2"></i>
+        <p class="text-sm font-semibold text-[var(--text)]">${item.label}</p>
+        <p class="text-xs mono text-[var(--text-dim)] mt-1">Add <span class="text-[var(--cyan)]">${item.src}</span> to your project folder to display image</p>
+      </div>
+    `;
+  }
+
+  if (captionEl) {
+    captionEl.textContent = item.caption;
+  }
+  lucide.createIcons();
+}
+
 // Modals
 const modals = {
   aboutMe: `
@@ -584,8 +662,28 @@ const modals = {
         <p class="text-xs text-[var(--text-dim)] mt-1 leading-relaxed">${d}</p>
       </div>`).join('')}`,
   lidar: `
-    <p class="mono text-xs text-[var(--cyan)] mb-1">Build & Calibration</p>
+    <p class="mono text-xs text-[var(--cyan)] mb-1">Media Gallery, Build & Calibration</p>
     <h3 class="text-xl font-bold mb-4">EchoSweep — DIY 3D LiDAR, VL53L0X + Dual-Axis Sweep</h3>
+
+    <!-- MEDIA TABS -->
+    <div class="flex flex-wrap gap-2 mb-3">
+      ${lidarMedia.map((m, idx) => `
+        <button type="button" onclick="renderLidarMediaStage(${idx})" class="media-tab lidar-media-btn ${idx === 0 ? 'active' : ''} px-3 py-1.5 rounded-lg text-xs mono flex items-center gap-1.5">
+          <i data-lucide="${m.icon}" class="w-3.5 h-3.5"></i> ${m.label}
+        </button>
+      `).join('')}
+    </div>
+
+    <!-- MAIN MEDIA STAGE (VIDEO / IMAGE) -->
+    <div class="rounded-xl overflow-hidden border border-[var(--border)] bg-[#090d16] mb-6">
+      <div id="lidarMediaStage" class="w-full min-h-[240px] max-h-[360px] flex items-center justify-center relative"></div>
+      <div class="px-4 py-2.5 border-t border-[var(--border-soft)] bg-[var(--surface)] flex items-center justify-between gap-2">
+        <p id="lidarMediaCaption" class="text-xs text-[var(--text-dim)] leading-relaxed"></p>
+      </div>
+    </div>
+
+    <!-- SCHEMATIC & PIPELINE -->
+    <p class="mono text-xs text-[var(--cyan)] mb-2 uppercase tracking-wider">Scanning Geometry & Pipeline</p>
     <svg viewBox="0 0 400 180" class="w-full rounded-md mb-5" style="background:#0d1320; border:1px solid var(--border);">
       <circle cx="200" cy="150" r="14" fill="var(--border)" stroke="var(--cyan)" stroke-width="1.5"/>
       <rect x="192" y="110" width="16" height="40" rx="3" fill="var(--surface)" stroke="var(--cyan)" stroke-width="1.5"/>
@@ -636,13 +734,21 @@ function openModal(key){
   const bd = document.getElementById('modalBackdrop');
   bd.classList.remove('hidden'); 
   bd.classList.add('flex');
-  lucide.createIcons();
+  
+  // If opening LiDAR modal, initialize the first media item (Live Sweep Demo video)
+  if (key === 'lidar') {
+    renderLidarMediaStage(0);
+  } else {
+    lucide.createIcons();
+  }
 }
 
 function closeModal(){
   const bd = document.getElementById('modalBackdrop');
   bd.classList.add('hidden'); 
   bd.classList.remove('flex');
+  // Clear modal content so any playing video stops immediately
+  document.getElementById('modalContent').innerHTML = '';
 }
 
 document.getElementById('modalBackdrop').addEventListener('click', e => {
